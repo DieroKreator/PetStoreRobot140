@@ -6,12 +6,62 @@ Library    RequestsLibrary
 # Objetos, Atributos e Variables
 ${url}    https://petstore.swagger.io/v2/user
 
-${user_id}     60814379198
+${user_id}    60814379198
 ${username}    figotti
-${first_name}    Fidel
-${last_name}    Santos
+${firstName}    Fidel
+${lastName}    Santos
 ${email}    figotti@gmail.com
 ${password}    123456
 ${phone}    51452895685
-${user_status}    1 
+${userStatus}    1
 
+*** Test Cases ***
+
+Post user
+    ${body}    Create Dictionary    id=${user_id}    username=${username}    firstName=${firstName}    lastName=${lastName}    
+    ...                             email=${email}  password=${password}    phone=${phone}    userStatus=${userStatus}
+
+    ${response}    POST    url=${url}    json=${body}
+
+    ${response_body}    Set Variable    ${response.json()}
+    Log To Console      ${response_body}
+
+    Status Should Be    200
+    Should Be Equal    ${response_body}[code]       ${{int(200)}}
+    Should Be Equal    ${response_body}[type]       unknown
+    Should Be Equal    ${response_body}[message]    ${user_id}
+
+Get user
+    ${response}    GET    ${{$url + '/' + $username}}
+
+    ${response_body}    Set Variable    ${response.json()}
+    Log To Console    ${response_body}
+
+    Status Should Be    200
+    Should Be Equal    ${response_body}[id]           ${{int($user_id)}} 
+    Should Be Equal    ${response_body}[firstName]    ${firstName}
+    Should Be Equal    ${response_body}[phone]        ${phone}
+
+Put user
+    ${body}    Evaluate    json.loads(open('./fixtures/json/user2.json').read())
+
+    ${response}    PUT    url=${{$url + '/' + $username}}   json=${body}
+
+    ${response_body}    Set Variable    ${response.json()}
+    Log To Console    ${response_body}
+    
+    Status Should Be    200
+    Should Be Equal    ${response_body}[code]       ${{int(200)}}
+    Should Be Equal    ${response_body}[type]       unknown
+    Should Be Equal    ${response_body}[message]    ${user_id}
+
+Delete user
+    ${response}    DELETE    ${{$url + '/' + $username}}    
+    
+    ${response_body}    Set Variable    ${response.json()}
+    Log To Console    ${response_body}
+
+    Status Should Be    200
+    Should Be Equal    ${response_body}[code]       ${{int(200)}}
+    Should Be Equal    ${response_body}[type]       unknown
+    Should Be Equal    ${response_body}[message]    ${username}
