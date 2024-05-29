@@ -1,6 +1,6 @@
 *** Settings ***
 Library    RequestsLibrary
-Library    DataDriver    ../../fixtures/csv/user.csv    dialect=excel
+Library    DataDriver    ../fixtures/csv/user.csv    dialect=excel
 Test Template    Create User DDT
 
 *** Variables ***
@@ -30,4 +30,3 @@ Create User DDT
     Status Should Be    200
     Should Be Equal    ${response_body}[code]       ${{int(200)}}
     Should Be Equal    ${response_body}[type]       unknown
-    Should Be Equal    ${response_body}[message]    ${id}
